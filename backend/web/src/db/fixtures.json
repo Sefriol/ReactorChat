@@ -1,0 +1,11 @@
+{
+    "collections": {
+        "users": [
+            {
+                "name" : "Johnny Dep",
+                "email" : "john@doe.com",
+                "password" : "password123456"
+            }   
+        ]
+    }
+}

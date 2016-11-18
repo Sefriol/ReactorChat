@@ -1,0 +1,55 @@
+{
+  "name": "mcc-g10-p2",
+  "version": "0.0.1",
+  "description": "MCC Group 10 P2.",
+  "main": "./src/start.js",
+  "scripts": {
+    "test": "APP_ENV=test mocha -R spec ./src/**/*.spec.js",
+    "start": "nodemon -L ./src/start.js",
+    "debug": "node-debug ./src/start.js",
+    "lint": "eslint ./src/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/teodorpatras/LineMentor-web.git"
+  },
+  "author": "Teodor Patras",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/teodorpatras/LineMentor-web/issues"
+  },
+  "homepage": "https://github.com/teodorpatras/LineMentor-web#readme",
+  "dependencies": {
+    "async": "2.0.1",
+    "bcrypt": "0.8.7",
+    "body-parser": "1.15.2",
+    "express": "4.14.0",
+    "express-jwt": "5.1.0",
+    "googleapis": "14.0.0",
+    "jsonwebtoken": "7.1.9",
+    "mongoose": "4.6.3",
+    "morgan": "1.7.0",
+    "passport": "0.3.2",
+    "validator": "6.0.0",
+    "winston": "2.2.0"
+  },
+  "devDependencies": {
+    "chai": "3.5.0",
+    "eslint": "3.7.1",
+    "mocha": "3.1.2",
+    "node-inspector": "0.12.8",
+    "request": "2.75.0"
+  },
+  "eslintConfig": {
+    "parserOptions": {
+      "ecmaVersion": 6,
+      "sourceType": "module"
+    },
+    "rules": {
+      "semi": [
+        "error",
+        "never"
+      ]
+    }
+  }
+}

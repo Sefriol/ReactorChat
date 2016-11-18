@@ -1,0 +1,18 @@
+version: '2'
+services:
+  web:
+    build: ./web
+    volumes: 
+      - "./web:/usr/src/app"
+    env_file: .env
+    ports:
+      - "80:${HTTP_PORT}"
+    links:
+      - mongo
+    depends_on:
+      - mongo
+  mongo:
+    build: ./db
+    env_file: .env
+    volumes:
+      - ./db/data:/data/db/
