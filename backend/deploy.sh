@@ -1,18 +1,6 @@
 #!/bin/sh
 
-remove=false
-
-if [ $# -gt 1 ]; then
-    echo "\nIllegal number of parameters.\n"
-    exit 1
-elif [ $# -eq 1 ]; then
-    if [ $1 == "-rm" ]; then
-      remove=true
-    else
-      echo "\nUnrecognized parameter: '$1'.\n"            
-      exit 1
-    fi
-fi
+# RUN THIS SCRIPT ON THE REMOTE ONLY TO CONFIGURE HTTPS USING CERTIFICATE FROM LETSENCRYPT
 
 if ! hash docker 2>/dev/null; then
   echo "\n======>>> Installing Docker...\n"
@@ -39,18 +27,18 @@ if ! hash docker-compose 2>/dev/null; then
   fi
 fi
 
-echo "\n======>>> Stopping all docker containers...\n"
+echo "\n======>>> Creating nginx-proxy network for Docker"
 sleep 1
+docker network create -d bridge nginx-proxy
+
+echo "\n======>>> Starting up NGINX & LETSENCRYPT proxy"
+sleep 1
+
+cd ./nginx-proxy
 docker-compose stop
-#docker stop $(docker ps -a -q)
+docker-compose up -d
 
-if [ $remove = true ]; then 
-  echo "\n======>>> Removing all docker containers...\n"
-  sleep 1
-  docker rm $(docker ps -a -q)
-fi
+echo "\n======>>> Starting up NGINX & LETSENCRYPT proxy"
 
-echo "\n======>>> Running docker-compose...\n"
-sleep 1
-docker-compose up --build -d
-
+cd ../api
+sh runserver.sh --deploy

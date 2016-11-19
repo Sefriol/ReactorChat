@@ -1,0 +1,19 @@
+version: '2'
+services:
+  web:
+    env_file: .env
+    environment:
+      - VIRTUAL_HOST=roshi.teodorpatras.com
+      - VIRTUAL_PORT=${HTTP_PORT}
+      - LETSENCRYPT_HOST=roshi.teodorpatras.com
+      - LETSENCRYPT_EMAIL=me@teodorpatras.com
+    ports:
+      - ${HTTP_PORT}
+    networks:
+      - proxy-tier
+      - default
+
+networks:
+  proxy-tier:
+    external:
+      name: nginx-proxy
