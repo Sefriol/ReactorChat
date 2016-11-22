@@ -1,0 +1,51 @@
+$roboto-font-path: '~materialize-css/fonts/roboto/';
+@import "~materialize-css/sass/materialize.scss";
+
+html, body, .app, .app-container {
+  height: 100%;
+}
+
+body {
+  background: #fafafa;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  color: #333;
+  margin: 0;
+  padding: 0;
+}
+
+.login {
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+  -webkit-transform: translateY(-50%);
+}
+
+.login .hint, .register .hint {
+  color: #aaa;
+}
+
+.login-error {
+  color: red;
+}
+
+
+
+.spinner-container {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 5;
+  background: rgba(0,0,0,0.5);
+  display: none;
+
+}
+
+.spinner {
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+}

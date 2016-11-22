@@ -9,6 +9,7 @@ services:
       - LETSENCRYPT_EMAIL=me@teodorpatras.com
     ports:
       - ${HTTP_PORT}
+      - ${WS_PORT}
     networks:
       - proxy-tier
       - default

@@ -7,6 +7,7 @@ const mongoAdapter = require('./db/mongoAdapter')
 const User = require('./db/models/user')
 
 const server = new Server(process.env.HTTP_PORT)
+
 server.start().then((port) => {
     console.log(` =========> Web app listening on port ${port}`)
     return mongoAdapter.connect()

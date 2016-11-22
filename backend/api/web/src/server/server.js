@@ -5,7 +5,6 @@ const morgan = require('morgan')
 const bodyParser = require('body-parser')
 const util = require('util')
 const jwt = require('express-jwt')
-
 const router = require('./router')
 const logger = require('../logger')
 
@@ -16,32 +15,46 @@ class Server {
   constructor(port = DEFAULT_PORT_VALUE) {
     this.port = port
     this.app = express()
-    _configure(this.app)
+    this.server = require('http').createServer(this.app)
   }
 
   start() {
+    const self = this
     return new Promise((resolve, reject) => {
-      this.srv = this.app.listen(this.port, () => {
-        resolve(this.port)
-      })
+      const app = self.server.listen(self.port)
+      self.io = require('socket.io').listen(app)
+
+      self.io.on('connection', function (socket) {
+        console.log('working as intended')
+        socket.on('news', function (msg) {
+          console.log(msg)
+        });
+        socket.on('disconnect', function () { })
+      });
+
+      _configure(self.app, self.io)
+
+      resolve(self.port)
     })
   }
 
   stop() {
+    const self = this
     return new Promise((resolve, reject) => {
-      this.srv.close(() => {
-        this.srv = null
-        resolve()
-      })
+      self.httpsServer.close()
+      // this.srv.close(() => {
+      //   this.srv = null
+      //   resolve()
+      // })
     })
   }
 }
 
-function _configure(app) {
+function _configure(app, io) {
 
   app.use(morgan('dev'))
 
-  app.use(bodyParser.json())
+  app.use(bodyParser.json({ limit: '50mb' }))
 
   app.use(jwt({ secret: process.env.SECRET })
     .unless({
@@ -49,7 +62,7 @@ function _configure(app) {
       `${BASE_URL}/users/register`]
     })
   )
-
+  app.set('socketio', io);
   app.use((req, res, next) => {
     res.setHeader("Access-Control-Allow-Origin", "*")
     res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization")

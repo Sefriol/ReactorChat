@@ -23,7 +23,7 @@ UserSchema.set('toJSON', {
     }
 })
 
-UserSchema.pre('save', function(next) {
+UserSchema.pre('save', (next) => {
     const user = this
     if (user.isModified('password') || user.isNew) {
         bcrypt.genSalt(10, (err, salt)  => {

@@ -7,6 +7,7 @@ services:
     env_file: .env
     links:
       - mongo
+      - redis
     depends_on:
       - mongo
   mongo:
@@ -16,3 +17,6 @@ services:
       - default
     volumes:
       - ./db/data:/data/db/
+  redis:
+    image: redis
+    restart: always
