@@ -1,5 +1,7 @@
 $roboto-font-path: '~materialize-css/fonts/roboto/';
 @import "~materialize-css/sass/materialize.scss";
+$material-icon-path: '~material-design-icons/iconfont/';
+@import '~material-design-icons/iconfont/material-icons.css';
 
 html, body, .app, .app-container {
   height: 100%;
@@ -20,6 +22,10 @@ body {
   -webkit-transform: translateY(-50%);
 }
 
+.side-nav {
+  width: 220px;
+}
+
 .login .hint, .register .hint {
   color: #aaa;
 }
@@ -28,7 +34,33 @@ body {
   color: red;
 }
 
+.subheaderbutton {
+  font-size: 1.5em !important;
+}
 
+.userView .background {
+  background-color: #26a69a;
+}
+.subheaderrow {
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
+.subheaderinput {
+  padding-right: 0px !important;
+  button {
+    height: 48px !important;
+    margin-top: 0px;
+    margin-bottom: 0px;
+  }
+  .input-field {
+    margin-top: 0px;
+    margin-bottom: 0px;
+    input {
+      margin-top: 0px;
+      margin-bottom: 0px;
+    }
+  }
+}
 
 .spinner-container {
   width: 100%;
@@ -45,7 +77,34 @@ body {
 }
 
 .spinner {
-    position: relative;
-    top: 50%;
-    transform: translateY(-50%);
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.dashboard {
+  margin-left: 230px;
+  margin-bottom: 70px;
+}
+.input-row {
+  width: 86%;
+}
+.messageWrapper {
+  margin-bottom: 50px;
+}
+
+.title .timestamp {
+  margin-left: 5px;
+}
+.chatform {
+  height: 65px;
+  position: fixed; 
+  bottom: 0; 
+  width: 85%;
+  background-color: #fafafa;
+  margin-bottom: 0px;
+}
+.chatformbtn {
+  float: right;
+  position: absolute;
+  margin-left: 5px;
 }

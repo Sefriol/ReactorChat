@@ -22,6 +22,7 @@
   "dependencies": {
     "async": "2.0.1",
     "bcrypt": "0.8.7",
+    "better-validator": "^2.1.1",
     "body-parser": "1.15.2",
     "easyimage": "^2.1.0",
     "express": "4.14.0",
@@ -34,6 +35,7 @@
     "node-tesseract": "^0.2.7",
     "passport": "0.3.2",
     "socket.io": "^1.6.0",
+    "socketio-jwt": "^4.5.0",
     "validator": "6.0.0",
     "winston": "2.2.0"
   },
@@ -53,6 +55,7 @@
       "sourceType": "module"
     },
     "rules": {
+      "indent": 2,
       "semi": [
         "error",
         "never"

@@ -26,3 +26,20 @@ Run locally:
 
 Run on remote:
 `sh runserver.sh --deploy`
+
+
+````
+{
+    id: "id",
+    user: "userid",
+    channel: "channelid",
+    message: "...",
+    time: Datetime
+}
+{
+    id: "id",
+    owner: "userid",
+    name: "channelname",
+    admins: ["userid",...],
+}
+````
