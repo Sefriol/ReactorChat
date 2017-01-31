@@ -23,8 +23,7 @@ export default class Users extends Component {
 
     render() {
         const {users, focuschannel} = this.props;
-        const filterusers = users.map(usr => urs.channel === '/' + focuschannel._id)
-        console.log('users',users, filterusers,this.props)
+        const filterusers = users.filter(usr => usr.channel === '/' + focuschannel._id)
         return (
           <div className='users'>
               <ul>

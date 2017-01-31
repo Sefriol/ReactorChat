@@ -6,6 +6,7 @@ export default class Header extends Component {
         onClickChannel: PropTypes.func.isRequired,
         onClickUser: PropTypes.func.isRequired,
         createChannel: PropTypes.func.isRequired,
+        addUser: PropTypes.func.isRequired,
         users: PropTypes.array.isRequired,
         channels: PropTypes.array.isRequired,
         user: PropTypes.object.isRequired,
@@ -18,7 +19,7 @@ export default class Header extends Component {
     }
     componentDidMount() {
         const { users, channels, user, focuschannel } = this.props;
-        this.setState({showResults: false, focuschannel: focuschannel});
+        this.setState({showCinput: false, focuschannel: focuschannel});
     }
     handleClickUser(event) {
         this.props.onClickUser(event.target.attributes.value.value)
@@ -29,17 +30,27 @@ export default class Header extends Component {
         this.props.onClickChannel(event.target.attributes.value.value)
     }
     handleCreateChannel(event) {
-        this.setState({showResults: !this.state.showResults});
+        this.setState({showCinput: !this.state.showCinput});
         console.log('channel creation handle', event.target);
     }
-    handleSubmit(event) {
+    handleAddUser(event) {
+        this.setState({showUinput: !this.state.showUinput});
+    }
+    handleCSubmit(event) {
         event.preventDefault();
         console.log(event, this.refs.channelname.value)
-        return
         const text = this.refs.channelname.value;
         this.props.createChannel(text);
         this.refs.channelname.value = '';
-        this.setState({showResults: !this.state.showResults});
+        this.setState({showCinput: !this.state.showCinput});
+    }
+    handleUSubmit(event) {
+        event.preventDefault();
+        console.log(event, this.refs.useremail.value)
+        const text = this.refs.useremail.value;
+        this.props.addUser(text);
+        this.refs.useremail.value = '';
+        this.setState({showUinput: !this.state.showUinput});
     }
     render() {
         return (
@@ -56,7 +67,7 @@ export default class Header extends Component {
                     <div className="row subheaderrow">
                         <div className="col s12">
                             {
-                                !this.state.showResults
+                                !this.state.showCinput
                                 ? 
                                 <div className="subheaderdiv">
                                     <a className="subheaderbutton material-icons right" onClick={this.handleCreateChannel.bind(this)}>add_circle_outline</a>
@@ -67,7 +78,7 @@ export default class Header extends Component {
                                     <div className="input-field col s8">
                                         <input placeholder="Channel Name" id="channelname" ref="channelname" type="text" autoComplete="off" />
                                     </div>
-                                    <div className="btn-flat waves-effect waves-light col s2" type="submit" name="action" onClick={this.handleSubmit.bind(this)}>
+                                    <div className="btn-flat waves-effect waves-light col s2" type="submit" name="action" onClick={this.handleCSubmit.bind(this)}>
                                         <i className="material-icons right">done</i>
                                     </div>
                                     <div className="btn-flat waves-effect waves-light col s2" onClick={this.handleCreateChannel.bind(this)}>
@@ -87,7 +98,30 @@ export default class Header extends Component {
                         );
                     })
                 }
-                <li><a className="subheader">Users</a></li>
+                <div className="row subheaderrow">
+                    <div className="col s12">
+                        {
+                            !this.state.showUinput
+                            ? 
+                            <div className="subheaderdiv">
+                                <a className="subheaderbutton material-icons right" onClick={this.handleAddUser.bind(this)}>add_circle_outline</a>
+                                <a className="subheader">Users</a>
+                            </div>
+                            : 
+                            <form className="col s12 subheaderinput">   
+                                <div className="input-field col s8">
+                                    <input placeholder="User email" id="useremail" ref="useremail" type="text" autoComplete="off" />
+                                </div>
+                                <div className="btn-flat waves-effect waves-light col s2" type="submit" name="action" onClick={this.handleUSubmit.bind(this)}>
+                                    <i className="material-icons right">done</i>
+                                </div>
+                                <div className="btn-flat waves-effect waves-light col s2" onClick={this.handleAddUser.bind(this)}>
+                                    <i className="material-icons right">clear</i>
+                                </div>
+                            </form>
+                        }
+                    </div>
+                </div>
                 <Users onClick={this.handleClickUser.bind(this)} users={this.props.users} focuschannel={this.props.focuschannel}/>
             </ul>
         );

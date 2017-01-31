@@ -16,7 +16,6 @@ function registerUser(req, res, next) {
     const email = req.body.email;
     const password = req.body.password;
     const name = req.body.name;
-    // console.log(req.app.get('socketio').getChat('587a09eabcc9a83b498a63b3'));
     if (validator.isEmail(email) &&
         validator.isLength(password, lengthValidatorOptions) &&
         validator.isLength(name, lengthValidatorOptions)) {
@@ -27,7 +26,7 @@ function registerUser(req, res, next) {
                 return next(new Error('Could not create user!'));
             }
             req.app.get('socketio').getChat(`${process.env.MONGOID}`).then((chat) => {
-                chat.addUser(user._id).then(res.status(201).send({ message: 'Success!' }));
+                chat.addUser(user._id.toString()).then(res.status(201).send({ message: 'Success!' }));
             });
         });
     } else {

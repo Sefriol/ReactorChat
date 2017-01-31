@@ -13,7 +13,7 @@ class Chat {
         this.io = server.io;
         this.id = id;
         this.admins = admins;
-        this.users = users.map(id => ({ id: id.toString(), sockets: [] }));
+        this.users = users.map(usr => ({ id: usr.id.toString(), name: usr.name, sockets: [] }));
     }
     start() {
         const self = this;
@@ -39,7 +39,7 @@ class Chat {
     stop() {
         const self = this;
         return new Promise((resolve, reject) => {
-            // Doesn't do anything
+            // Doesn't do anything atm
             resolve();
         });
     }
@@ -50,8 +50,7 @@ class Chat {
             validator(userid).isString().isMongoId();
             if (validator.run().length > 0) return reject('Given UserID is not a MongoID');
             if (self.users.map(user => user.id).indexOf(userid) === -1) {
-                self.users.push({ id: userid, sockets: [] });
-                dbAddUser(userid, false)
+                dbAddUser(self, userid, false)
                     .catch((reason) => {
                         self.users.splice(self.users.map(socket => socket.decoded_token.id).indexOf(userid), 1);
                         reject(reason);
@@ -69,8 +68,7 @@ class Chat {
             validator(userid).isString().isMongoId();
             if (validator.run().length > 0) return reject('Given UserID is not a MongoID');
             if (self.admins.indexOf(userid) === -1) {
-                self.admins.push(userid);
-                dbAddUser(userid, true)
+                dbAddUser(self.id, userid, true)
                     .catch((reason) => {
                         self.admins.splice(self.admins.indexOf(userid), 1);
                         reject(reason);
@@ -88,7 +86,11 @@ class Chat {
 }
 
 function handleConnection(chat, socket) {
-    socket.emit('status', { event: 'connected', channel: chat.channelname, users: chat.users.map(id => ({ id: id.toString() })), user: socket.decoded_token });
+    socket.emit('status', {
+        event: 'connected',
+        channel: chat.channelname,
+        users: chat.users.map(user => ({ id: user.id.toString(), name: user.name, online: user.sockets.length > 0 })),
+        user: socket.decoded_token });
     chat.channel.emit('status', {
         event: 'user:join',
         user: { name: socket.decoded_token.name, id: socket.decoded_token.id },
@@ -117,30 +119,34 @@ function handleConnection(chat, socket) {
             });
         })
         .on('chat', (msg) => {
-            const msgObj = {
-                channel: chat.id,
-                user: socket.decoded_token.id,
-                message: msg,
-                time: new Date(),
-            };
-            new Message(msgObj).save((err) => { if (err) console.log('\x1b[31m', `DbError while saving a msg: ${err}`, '\x1b[0m'); });
-            msgObj.user = {
-                id: socket.decoded_token.id,
-                name: socket.decoded_token.name,
-            };
-            chat.channel.emit('chat', msgObj);
+            const validator = new Validator();
+            validator(msg).isString();
+            if (validator.run().length === 0) {
+                const msgObj = {
+                    channel: chat.id,
+                    user: socket.decoded_token.id,
+                    message: msg,
+                    time: new Date(),
+                };
+                new Message(msgObj).save((err) => { if (err) console.log('\x1b[31m', `DbError while saving a msg: ${err}`, '\x1b[0m'); });
+                msgObj.user = {
+                    id: socket.decoded_token.id,
+                    name: socket.decoded_token.name,
+                };
+                chat.channel.emit('chat', msgObj);
+            }
         })
         .on('admin', (msg) => {
             if (chat.admins.indexOf(socket.decoded_token.id) !== -1) {
                 const validator = new Validator();
-                validator(msg).isString().isJSON((str) => {
-                    const JSONobject = JSON.parse(str);
-                    JSONobject('command').required().isString().isAlpha();
+                validator(msg).isObject((obj) => {
+                    obj('command').required().isString().isAlpha();
                 });
-                if (validator.isString().isJSON(msg) && msg.command) {
+                if (validator.run().length === 0) {
                     try {
-                        ChatCommands[msg.command](socket, chat, msg.args);
+                        ChatCommands.CommandMap[msg.command](socket, chat, msg);
                     } catch (error) {
+                        console.log(error);
                         socket.emit('status', 'Incorrect command');
                     }
                 }
@@ -169,7 +175,7 @@ function handleConnection(chat, socket) {
                         `${channel.name}`,
                         `${channel._id}`,
                         [socket.decoded_token.id],
-                        [socket.decoded_token.id]);
+                        [socket.decoded_token]);
                         newchat.start();
                         chat.server.app.get('socketio').addChat(newchat);
                         Channel.find({ users: socket.decoded_token.id }, 'id name', (err, channels) => {
@@ -185,17 +191,32 @@ function handleConnection(chat, socket) {
         });
 }
 
-function dbAddUser(userid, admin) {
+function dbAddUser(chat, userid, admin) {
     const UpdateObject = admin ? { $push: { 'admins': userid } } : { $push: { 'users': userid } };
     return new Promise((resolve, reject) => {
         User.findById(userid, (err, usr) => {
             if (err) reject(err);
+            if (!usr) reject('User not found')
             if (usr) {
-                Channel.findByIdAndUpdate(self.id, UpdateObject, (err) => {
+                Channel.findByIdAndUpdate(chat.id, UpdateObject, (err) => {
                     if (err) {
                         reject(err);
                     } else {
-                        resolve();
+                        if (admin) {
+                            chat.admins.push(usr._id);
+                            resolve();
+                        } else {
+                            chat.users.push({ id: usr._id.toString(), name: usr.name, sockets: [] });
+                            chat.server.app.get('socketio').getChat(`${process.env.MONGOID}`).then((chl) => {
+                                const newusr = chl.getUser(usr._id.toString()).sockets;
+                                if (newusr[0]) {
+                                    Channel.find({ users: newusr[0].decoded_token.id }, 'id name', (err, channels) => {
+                                        if (channels) newusr[0].emit('status', { event: 'channels:update', channels });
+                                    });
+                                }
+                            });
+                            resolve();
+                        }
                     }
                 });
             }

@@ -62,7 +62,7 @@ function initUsers(admin) {
 function initChannels(admin, usrs) {
     console.log('Initializing Channels');
     const chats = new Chats(server.io);
-    Channels.find({}, (err, channels) => {
+    Channels.find({}, '', { populate: { path: 'users', select: 'name _id' } }, (err, channels) => {
         console.log('Search finished');
         if (err) {
             return logger.err(err);
@@ -97,7 +97,7 @@ function initChannels(admin, usrs) {
                     `${channel.name}`,
                     `${channel._id}`,
                     channel.admins,
-                    channel.users)
+                    channel.users);
                 chat.start().then(consolechannels.push(channel._id));
                 chats.addChat(chat);
             });

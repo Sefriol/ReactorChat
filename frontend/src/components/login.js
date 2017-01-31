@@ -19,12 +19,10 @@ export default class Login extends Component {
             dataType: "json",
             data: JSON.stringify(userInfo),
             success: function(result) {
-                console.log(result);
                 this.props.setLogin(result.token, result.channels, result.user);
             }.bind(this),
             error: function() {
                 jquery(".login-error").text("Login error");
-                console.log("Login error");
             }
         });
         //this.props.setLogin(true);
@@ -62,7 +60,7 @@ export default class Login extends Component {
 		      <div className="row">
 		        <div className="col l6 offset-l3 s12 center login-error"></div>
 		      </div>
-		      <p className="center">Don't have an account? <a href="/register">Register</a></p>
+		      <p className="center">Don't have an account? <a href="#!" onClick={this.props.setRegister.bind(this)}>Register</a></p>
 		    </div>
         );
     }
