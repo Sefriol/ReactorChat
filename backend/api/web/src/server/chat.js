@@ -147,11 +147,11 @@ function handleConnection(chat, socket) {
                         ChatCommands.CommandMap[msg.command](socket, chat, msg);
                     } catch (error) {
                         console.log(error);
-                        socket.emit('status', 'Incorrect command');
+                        socket.emit('status', { event: 'error', message: 'Incorrect command' });
                     }
                 }
             } else {
-                socket.emit('status', 'Unauthorized command');
+                socket.emit('status', { event: 'error', message: 'Unauthorized command' });
             }
         })
         .on('create', (msg) => {
@@ -185,7 +185,7 @@ function handleConnection(chat, socket) {
                     }
                 });
             } else {
-                socket.emit('status', 'Invalid channel name');
+                socket.emit('status', { event: 'error', message: 'Invalid channel name' });
                 console.log(validator.run());
             }
         });

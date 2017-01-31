@@ -3,10 +3,6 @@
 
 `cd backend/`
 
-### Backend deployment
-
-SSH into the remote machine and run `sh deploy.sh`. This will configure NGINX proxy with letsecnrypt companion for generating TLS certificates, thus achieving end-to-end HTTPS communication.
-
 ### Other commands
 
 Stop/remove all Docker containers:
@@ -16,9 +12,6 @@ Stop/remove all Docker containers:
 
 Delete all images
 `docker rmi $(docker images -q)`
-
-Set up the external network:
-`docker network create -d bridge nginx-proxy`
 
 Run locally: 
 `sh runserver.sh`

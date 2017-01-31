@@ -23,10 +23,10 @@ function AddAdmin(socket, channel, userid) {
             channel.AddAdmin(userid)
                 .catch((reason) => {
                     logger.err(`Adding an admin to the channel caused an error: ${reason}`);
-                    socket.emit('status', 'AddAdmin command caused an error');
+                    socket.emit('status', { event: 'error', message: 'AddAdmin command caused an error' });
                 })
                 .then(() => {
-                    socket.emit('status', 'Successfully added an admin');
+                    socket.emit('status', { event: 'success', message: 'Successfully added an admin' });
                 });
         }
     }
@@ -48,10 +48,10 @@ function AddUser(socket, channel, object) {
             channel.addUser(object.userid)
                 .catch((reason) => {
                     logger.err(`Adding an user to the channel caused an error: ${reason}`);
-                    socket.emit('status', 'AddUser command caused an error');
+                    socket.emit('status', { event: 'error', message: 'AddUser command caused an error' });
                 })
                 .then(() => {
-                    socket.emit('status', 'Successfully added an user');
+                    socket.emit('status', { event: 'success', message: 'Successfully added an user' });
                 });
         } else if (val.run().length === 0 && object.email) {
             User.findOne({ email: object.email }, (err, usr) => {
@@ -60,15 +60,15 @@ function AddUser(socket, channel, object) {
                     channel.addUser(usr._id.toString())
                     .catch((reason) => {
                         logger.err(`Adding an user to the channel caused an error: ${reason}`);
-                        socket.emit('status', 'AddUser command caused an error');
+                        socket.emit('status', { event: 'error', message: 'AddUser command caused an error' });
                     })
                     .then(() => {
-                        socket.emit('status', 'Successfully added an user');
+                        socket.emit('status', { event: 'success', message: 'Successfully added an user' });
                     });
                 }
             });
         } else {
-            socket.emit('status', 'Invalid command');
+            socket.emit('status', { event: 'error', message: 'Invalid command' });
         }
     }
 }
