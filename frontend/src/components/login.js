@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import jquery from 'jquery';
+import config from '../config'
 
 export default class Login extends Component {
     constructor (props) {
@@ -14,7 +15,7 @@ export default class Login extends Component {
         const userInfo = {email: email, password: password};
         jquery.ajax({
             type: "POST",
-            url: "http://localhost/api/users/auth",
+            url: `${config.BaseBackendURL}api/users/auth`,
             contentType: "application/json",
             dataType: "json",
             data: JSON.stringify(userInfo),
@@ -34,19 +35,18 @@ export default class Login extends Component {
 		  <div className="container login">
 		      <div className="row">
 		        <div className="col l6 offset-l3 s12 center">Sign in</div>
-		        <div className="col l6 offset-l3 s12 center hint">Default email: test@test.com, pw: test123</div>
 		      </div>
 		      <div className="row">
 		        <form className="col s12" onSubmit={this.onFormSubmit.bind(this)}>
 		          <div className="row">
 		            <div className="input-field col l6 offset-l3 s12">
-		              <input name="email" id="email" type="email" ref="email" className="validate" defaultValue="test2@example.com"/>
+		              <input name="email" id="email" type="email" ref="email" className="validate" defaultValue={config.dev ? "test2@example.com" : null}/>
 		              <label htmlFor="email">Email</label>
 		            </div>
 		          </div>
 		          <div className="row">
 		            <div className="input-field col l6 offset-l3 s12">
-		              <input name="password" id="password" type="password" ref="password" className="validate" defaultValue="12345678"/>
+		              <input name="password" id="password" type="password" ref="password" className="validate" defaultValue={config.dev ? "12345678" : null}/>
 		              <label htmlFor="password">Password</label>
 		            </div>
 		          </div>

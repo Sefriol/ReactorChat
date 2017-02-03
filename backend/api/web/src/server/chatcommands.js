@@ -7,7 +7,7 @@ function ValidateUser(issuer, channel) {
     if (issuer
         && validator.isMongoId(issuer.id)
         && channel) {
-        //console.log(channel.channelname, issuer.id, channel.users)
+        // console.log(channel.channelname, issuer.id, channel.users)
         if (channel.users.map(user => user.id).indexOf(issuer.id) === -1) {
             return -1; // User is not a member of this channel
         } else if (channel.admins.indexOf(issuer.id) !== -1) {

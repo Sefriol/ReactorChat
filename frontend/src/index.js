@@ -8,6 +8,7 @@ import "./styles/styles.scss";
 import icons from 'material-design-icons';
 import materialize from 'materialize-css';
 import jquery from 'jquery';
+import config from './config'
 
 class App extends Component {
 
@@ -28,10 +29,11 @@ class App extends Component {
 
     _userJoined(socket, data) {
         //console.log('userjoin:', data)
-        var {users} = this.state;
+        var {users,chfocus} = this.state;
         var {user} = data;
         user.channel = socket.nsp
         users.push(user);
+        if(socket.nsp === `/${chfocus._id}`) Materialize.toast(`User ${user.name} joined!`, 1500)
         this.setState({users});
     }
 
@@ -44,12 +46,11 @@ class App extends Component {
     }
 
     _statusRecieve(socket,data) {
-        const {event} = data;
+        const {event, message} = data;
         //console.log('statusreveive',event,data)
         switch (event) {
         case 'user:join':
             this._userJoined(socket, data);
-            //console.log('userjoincase')
             break;
         case 'user:left':
             this._userLeft(socket, data);
@@ -57,6 +58,8 @@ class App extends Component {
         case 'channels:update':
             const {channels} = data;
             this.setState({ channels: channels });
+            Materialize.toast(`Updated channels`, 1500);
+            break;
         case 'connected':
             const {users} = data;
             if (!users) break;
@@ -64,6 +67,13 @@ class App extends Component {
             for (var index = 0; index < filterusers.length; index++) {
                 this._userJoined(socket, {user: filterusers[index]});
             }
+            break;
+        case 'error':
+            Materialize.toast(`Error: ${message}`, 1500, 'red');
+            break;
+        case 'success':
+            Materialize.toast(`${message}`, 1500, 'green');
+            break;
         default:
             break;
         }
@@ -82,7 +92,7 @@ class App extends Component {
         var {chfocus, channels, sockets} = this.state
         //console.log('handlecclick',id, sockets.map(socket => socket.nsp), sockets.map(socket => socket.nsp).indexOf('/' + id))
         if (sockets.map(socket => socket.nsp).indexOf('/' + id) === -1) {
-            let socket = io('http://localhost/' + channels[channels.map(channel => channel._id).indexOf(id)]._id);
+            let socket = io(`${config.BaseBackendURL}${channels[channels.map(channel => channel._id).indexOf(id)]._id}`);
             sockets.push(socket)
             socket.on('connect', this._authenticateWS.bind(this, socket));
         }
@@ -95,25 +105,25 @@ class App extends Component {
 
     handleMessageSubmit(message) {
         const {sockets, chfocus} = this.state;
-        sockets[sockets.map(socket => socket.nsp).indexOf('/' + chfocus._id)].emit('chat', message);
+        sockets[sockets.map(socket => socket.nsp).indexOf(`/${chfocus._id}`)].emit('chat', message);
     }
 
     handleCreateChannel(channelname) {
         const {sockets, chfocus} = this.state;
-        //console.log(sockets.map(socket => socket.nsp).indexOf('/' + chfocus._id),sockets.map(socket => socket.nsp))
-        sockets[sockets.map(socket => socket.nsp).indexOf('/' + chfocus._id)].emit('create', { name: channelname });
+        //console.log(sockets.map(socket => socket.nsp).indexOf(`/${chfocus._id}`),sockets.map(socket => socket.nsp))
+        sockets[sockets.map(socket => socket.nsp).indexOf(`/${chfocus._id}`)].emit('create', { name: channelname });
     }
 
     handleAddUser(email) {
         const {sockets, chfocus} = this.state;
-        sockets[sockets.map(socket => socket.nsp).indexOf('/' + chfocus._id)].emit('admin', {command:'addUser', email: email });
+        sockets[sockets.map(socket => socket.nsp).indexOf(`/${chfocus._id}`)].emit('admin', {command:'addUser', email: email });
     }
 
     setLogin(token, channels, user) {
         this.setState({logged: true, channels: channels, token: token, chfocus: channels[0], user: user, sockets: []});
         let {sockets} = this.state;
         for (var index = 0; index < channels.length; index++) {
-            let socket = io('http://localhost/' + channels[index]._id);
+            let socket = io(`${config.BaseBackendURL}${channels[index]._id}`);
             sockets.push(socket)
             socket.on('connect', this._authenticateWS.bind(this, socket));
         }

@@ -44,7 +44,7 @@ server.start().then((port) => {
 });
 
 function initUsers(admin) {
-    console.log('Requesting users..')
+    console.log('Requesting users..');
     User.find({}, (err, results) => {
         if (results && results.length === 0) {
             throw Error('No users?');

@@ -2,7 +2,7 @@ const socketioJwt = require('socketio-jwt');
 const Validator = require('better-validator');
 const Channel = require('../db/models/channel');
 const User = require('../db/models/user');
-const Message = require('../db/models/message')
+const Message = require('../db/models/message');
 const ChatCommands = require('./chatcommands');
 const logger = require('../logger');
 
@@ -49,16 +49,18 @@ class Chat {
             const validator = new Validator();
             validator(userid).isString().isMongoId();
             if (validator.run().length > 0) return reject('Given UserID is not a MongoID');
-            if (self.users.map(user => user.id).indexOf(userid) === -1) {
-                dbAddUser(self, userid, false)
+            else if (self.users.map(user => user.id).indexOf(userid) === -1) {
+                return dbAddUser(self, userid, false)
                     .catch((reason) => {
-                        self.users.splice(self.users.map(socket => socket.decoded_token.id).indexOf(userid), 1);
-                        reject(reason);
+                        self.users
+                            .splice(
+                                self.users.map(socket => socket.decoded_token.id).indexOf(userid),
+                                1);
+                        return reject(reason);
                     })
                     .then(resolve());
-            } else {
-                reject('User is already a member');
             }
+            return reject('User is already a member');
         });
     }
     addAdmin(userid) {
@@ -67,16 +69,15 @@ class Chat {
             const validator = new Validator();
             validator(userid).isString().isMongoId();
             if (validator.run().length > 0) return reject('Given UserID is not a MongoID');
-            if (self.admins.indexOf(userid) === -1) {
-                dbAddUser(self.id, userid, true)
+            else if (self.admins.indexOf(userid) === -1) {
+                return dbAddUser(self.id, userid, true)
                     .catch((reason) => {
                         self.admins.splice(self.admins.indexOf(userid), 1);
-                        reject(reason);
+                        return reject(reason);
                     })
                     .then(resolve());
-            } else {
-                reject('User is already a member');
             }
+            return reject('User is already a member');
         });
     }
     getUser(id) {
@@ -89,7 +90,12 @@ function handleConnection(chat, socket) {
     socket.emit('status', {
         event: 'connected',
         channel: chat.channelname,
-        users: chat.users.map(user => ({ id: user.id.toString(), name: user.name, online: user.sockets.length > 0 })),
+        users: chat.users.map(user => (
+            {
+                id: user.id.toString(),
+                name: user.name,
+                online: user.sockets.length > 0,
+            })),
         user: socket.decoded_token });
     chat.channel.emit('status', {
         event: 'user:join',
@@ -103,7 +109,7 @@ function handleConnection(chat, socket) {
                 socket.emit('status', { event: 'error', message: `Couldn't receive messages for channel ${chat.channelname}` });
             } else {
                 const oldestfirst = msgs.reverse();
-                for (let i = 0, len = msgs.length; i < len; i++) {
+                for (let i = 0, len = msgs.length; i < len; i += 1) {
                     chat.channel.emit('chat', oldestfirst[i]);
                 }
             }
@@ -192,34 +198,29 @@ function handleConnection(chat, socket) {
 }
 
 function dbAddUser(chat, userid, admin) {
-    const UpdateObject = admin ? { $push: { 'admins': userid } } : { $push: { 'users': userid } };
+    const UpdateObject = admin ? { $push: { admins: userid } } : { $push: { users: userid } };
     return new Promise((resolve, reject) => {
         User.findById(userid, (err, usr) => {
-            if (err) reject(err);
-            if (!usr) reject('User not found')
-            if (usr) {
-                Channel.findByIdAndUpdate(chat.id, UpdateObject, (err) => {
-                    if (err) {
-                        reject(err);
-                    } else {
-                        if (admin) {
-                            chat.admins.push(usr._id);
-                            resolve();
-                        } else {
-                            chat.users.push({ id: usr._id.toString(), name: usr.name, sockets: [] });
-                            chat.server.app.get('socketio').getChat(`${process.env.MONGOID}`).then((chl) => {
-                                const newusr = chl.getUser(usr._id.toString()).sockets;
-                                if (newusr[0]) {
-                                    Channel.find({ users: newusr[0].decoded_token.id }, 'id name', (err, channels) => {
-                                        if (channels) newusr[0].emit('status', { event: 'channels:update', channels });
-                                    });
-                                }
-                            });
-                            resolve();
-                        }
+            if (err) return reject(err);
+            else if (!usr) return reject('User not found');
+            return Channel.findByIdAndUpdate(chat.id, UpdateObject, (errUpdate) => {
+                if (errUpdate) {
+                    return reject(errUpdate);
+                } else if (admin) {
+                    chat.admins.push(usr._id.toString());
+                    return resolve();
+                }
+                chat.users.push({ id: usr._id.toString(), name: usr.name, sockets: [] });
+                chat.server.app.get('socketio').getChat(`${process.env.MONGOID}`).then((chl) => {
+                    const newusr = chl.getUser(usr._id.toString()).sockets;
+                    if (newusr[0]) {
+                        Channel.find({ users: newusr[0].decoded_token.id }, 'id name', (errFind, channels) => {
+                            if (channels) newusr[0].emit('status', { event: 'channels:update', channels });
+                        });
                     }
                 });
-            }
+                return resolve();
+            });
         });
     });
 }

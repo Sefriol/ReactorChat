@@ -74,7 +74,7 @@ export default class Header extends Component {
                                     <a className="subheader">Channels</a>
                                 </div>
                                 : 
-                                <form className="col s12 subheaderinput">   
+                                <form className="col s12 subheaderinput" onSubmit={this.handleCSubmit.bind(this)}>   
                                     <div className="input-field col s8">
                                         <input placeholder="Channel Name" id="channelname" ref="channelname" type="text" autoComplete="off" />
                                     </div>
@@ -108,7 +108,7 @@ export default class Header extends Component {
                                 <a className="subheader">Users</a>
                             </div>
                             : 
-                            <form className="col s12 subheaderinput">   
+                            <form className="col s12 subheaderinput" onSubmit={this.handleUSubmit.bind(this)}>   
                                 <div className="input-field col s8">
                                     <input placeholder="User email" id="useremail" ref="useremail" type="text" autoComplete="off" />
                                 </div>

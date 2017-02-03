@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import jquery from 'jquery';
+import config from '../config'
 
 export default class Register extends Component {
     constructor (props) {
@@ -17,7 +18,7 @@ export default class Register extends Component {
         const userInfo = {name: username, password: password, email: email};
         jquery.ajax({
             type: "PUT",
-            url: "http://localhost/api/users/register",
+            url: `${config.BaseBackendURL}api/users/register`,
             contentType: "application/json",
             dataType: "json",
             data: JSON.stringify(userInfo),
@@ -43,25 +44,25 @@ export default class Register extends Component {
 		        <form className="col s12" onSubmit={this.onFormSubmit.bind(this)}>
                   <div className="row">
 		            <div className="input-field col l6 offset-l3 s12">
-		              <input name="username" id="username" type="text" ref="username" className="validate"/>
+		              <input name="username" id="username" type="text" ref="username" className="validate" defaultValue={config.dev ? "testman" : null}/>
 		              <label htmlFor="username">Username</label>
 		            </div>
 		          </div>
 		          <div className="row">
 		            <div className="input-field col l6 offset-l3 s12">
-		              <input name="email" id="email" type="email" ref="email" className="validate"/>
+		              <input name="email" id="email" type="email" ref="email" className="validate" defaultValue={config.dev ? "test2@example.com" : null}/>
 		              <label htmlFor="email">Email</label>
 		            </div>
 		          </div>
 		          <div className="row">
 		            <div className="input-field col l6 offset-l3 s12">
-		              <input name="password" id="password" type="password" ref="password" className="validate"/>
+		              <input name="password" id="password" type="password" ref="password" className="validate" defaultValue={config.dev ? "12345678" : null}/>
 		              <label htmlFor="password">Password</label>
 		            </div>
 		          </div>
                   <div className="row">
 		            <div className="input-field col l6 offset-l3 s12">
-		              <input name="passwordrepeat" id="passwordrepeat" type="password" ref="passwordrepeat" className="validate" />
+		              <input name="passwordrepeat" id="passwordrepeat" type="password" ref="passwordrepeat" className="validate" defaultValue={config.dev ? "12345678" : null}/>
 		              <label htmlFor="password">Repeat Password</label>
 		            </div>
 		          </div>

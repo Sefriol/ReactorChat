@@ -8,44 +8,6 @@ const logger = require('../logger');
 
 const DEFAULT_PORT_VALUE = 8081;
 const BASE_URL = '/api';
-class Chats {
-    constructor() {
-        this.chats = [];
-    }
-    addChat(newchat) {
-        const self = this;
-        return new Promise((resolve, reject) => {
-            if (self.chats.map(chat => chat.id).indexOf(newchat.id) === -1) {
-                self.chats.push(newchat);
-                resolve();
-            } else { reject(); }
-        });
-    }
-    removeChat(rmchat) {
-        const self = this;
-        return new Promise((resolve, reject) => {
-            const idx = self.chats.map(chat => chat.id).indexOf(rmchat.id);
-            if (idx === -1) {
-                reject();
-            } else {
-                self.chats[idx].stop();
-                self.chats.splice(idx, 1);
-                resolve();
-            }
-        });
-    }
-    getChat(chatId) {
-        const self = this;
-        return new Promise((resolve, reject) => {
-            const idx = self.chats.map(chat => chat.id).indexOf(chatId);
-            if (idx === -1) {
-                reject();
-            } else {
-                resolve(self.chats[idx]);
-            }
-        });
-    }
-}
 
 class Server {
     constructor(port = DEFAULT_PORT_VALUE) {
@@ -59,7 +21,7 @@ class Server {
         return new Promise((resolve, reject) => {
             const app = self.server.listen(self.port);
             self.io = require('socket.io').listen(app);
-            _configure(self.app, self.getChat);
+            _configure(self.app);
             resolve(self.port);
         });
     }
@@ -75,11 +37,13 @@ class Server {
         const self = this;
         return new Promise((resolve, reject) => {
             self.app.set('socketio', chats);
+            if (!self.app.get('socketio')) reject();
+            else resolve();
         });
     }
 }
 
-function _configure(app, functions) {
+function _configure(app) {
     app.use(morgan('dev'));
 
     app.use(bodyParser.json({ limit: '50mb' }));

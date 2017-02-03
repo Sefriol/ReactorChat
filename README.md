@@ -19,7 +19,8 @@ Run locally:
 Run on remote:
 `sh runserver.sh --deploy`
 
-###Database Schemas
+### Database Schemas
+
 ````
 Message
 {
@@ -45,7 +46,7 @@ User
     email: "..."
 }
 ````
-###Backend APIs
+### Backend APIs
 ````
 PUT "/api/users/register"
 {
@@ -72,7 +73,7 @@ Respond: Success
     user: {_id: "MongoID", name: "..."}
 }
 ````
-###Backend Websocket commands
+### Backend Websocket commands
 ````
 Connection:
 const socket = io('http://localhost/' + 'MongoID');
@@ -90,10 +91,12 @@ Response:
 
 command:
 socket.emit("admin", {command: "addUser", email: "test@test.test"})
+
 Response: Failure
 'status', { event: 'error', message:'Incorrect command'}
 'status', { event: 'error', message:'Unauthorized command'}
 'status', { event: 'error', message:'AddUser command caused an error'}
+
 Response: Success
 'status',
 {
@@ -106,11 +109,14 @@ Response: Success
     message: 'Successfully added an user'
 }
 
+
 command:
 socket.emit("create", {name: "..."})
+
 Response: Failure
 'status', { event: 'error', message: 'Invalid channel name'}
 'status', { event: 'error' }
+
 Response: Success
 'status',
 {
@@ -119,3 +125,7 @@ Response: Success
 }
 
 ````
+
+## Frontend
+
+
