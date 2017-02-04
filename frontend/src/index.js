@@ -5,9 +5,6 @@ import Register from "./components/register";
 import Dashboard from "./components/dashboard";
 import Header from "./components/header";
 import "./styles/styles.scss";
-import icons from 'material-design-icons';
-import materialize from 'materialize-css';
-import jquery from 'jquery';
 import config from './config'
 
 class App extends Component {

@@ -43,7 +43,6 @@ export default class Dashboard extends Component {
                                 </span>
                                 <p>{msg.message}
                                 </p>
-                                <a href="#!" className="secondary-content"><i className="material-icons">grade</i></a>
                                 </li>
                             );
                         })

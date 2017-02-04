@@ -1,4 +1,11 @@
 # ReaktorChat
+
+## Summary
+
+ReactorChat is a chat application with NodeJS backend which supported by Socket.io, ExpressJS and MongoDB. Frontend is done with ReactJS and styling follows Google's Materialize.
+
+Backend provides a possibility for users to create channels and invite registered users by giving their email. User are divided into two groups: channel admins and users. Currently the UI supports only adding users to the channel, but backend has support for adding admins as well.
+
 ## Backend
 
 `cd backend/`
@@ -74,10 +81,10 @@ Respond: Success
 }
 ````
 ### Backend Websocket commands
-````
+````javascript
 Connection:
 const socket = io('http://localhost/' + 'MongoID');
-socket.on('connect',socket.emit('authenticate', {token: "authenticationstr"})
+socket.on('connect', socket.emit('authenticate', {token: 'authenticationstr'})
 
 command:
 socket.emit("chat", "...")
@@ -128,4 +135,17 @@ Response: Success
 
 ## Frontend
 
+`cd frontend/`
 
+### Other commands
+
+Stop/remove all Docker containers:
+
+`docker stop $(docker ps -a -q)`
+`docker rm $(docker ps -a -q)`
+
+Delete all images
+`docker rmi $(docker images -q)`
+
+Run: 
+`sh runfront.sh`

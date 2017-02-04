@@ -1,6 +1,6 @@
 module.exports = {
     entry: [
-        './src','webpack/hot/dev-server' 
+        './src'
     ],
     output: {
         path: __dirname,
@@ -24,6 +24,10 @@ module.exports = {
             {
                 test: /\.scss$/,
                 loaders: ["style", "css", "sass"]
+            },
+            {
+                test: /\.json$/,
+                loaders: ['json-loader']
             }
         ]
     },
@@ -31,9 +35,6 @@ module.exports = {
         historyApiFallback: true,
         contentBase: './'
     },
-    watchOptions: {
-        poll: true
-    },  
     externals: {
         jquery: 'jQuery',
         $: 'jQuery'

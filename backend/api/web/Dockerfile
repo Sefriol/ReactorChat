@@ -16,6 +16,4 @@ ENV SECRET ${SECRET}
 
 RUN npm install nodemon -g
 
-RUN apt-get update
-
 CMD npm install && npm start
