@@ -108,10 +108,7 @@ function handleConnection(chat, socket) {
             if (err) {
                 socket.emit('status', { event: 'error', message: `Couldn't receive messages for channel ${chat.channelname}` });
             } else {
-                const oldestfirst = msgs.reverse();
-                for (let i = 0, len = msgs.length; i < len; i += 1) {
-                    chat.channel.emit('chat', oldestfirst[i]);
-                }
+                msgs.reverse().map(oldestfirst => chat.channel.emit('chat', oldestfirst));
             }
         });
     chat.getUser(socket.decoded_token.id).sockets.push(socket);

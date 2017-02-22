@@ -60,10 +60,7 @@ class App extends Component {
         case 'connected':
             const {users} = data;
             if (!users) break;
-            const filterusers = users.filter(usr => usr.online)
-            for (var index = 0; index < filterusers.length; index++) {
-                this._userJoined(socket, {user: filterusers[index]});
-            }
+            users.filter(usr => usr.online).map(filtusr => this._userJoined(socket, {user: filtusr}));
             break;
         case 'error':
             Materialize.toast(`Error: ${message}`, 1500, 'red');
@@ -119,11 +116,11 @@ class App extends Component {
     setLogin(token, channels, user) {
         this.setState({logged: true, channels: channels, token: token, chfocus: channels[0], user: user, sockets: []});
         let {sockets} = this.state;
-        for (var index = 0; index < channels.length; index++) {
-            let socket = io(`${config.BaseBackendURL}${channels[index]._id}`);
+        channels.map(channel => {
+            let socket = io(`${config.BaseBackendURL}${channel._id}`);
             sockets.push(socket)
             socket.on('connect', this._authenticateWS.bind(this, socket));
-        }
+        })
         this.setState({sockets: sockets})
     }
 
